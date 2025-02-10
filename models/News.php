@@ -39,5 +39,15 @@ class News {
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
+    public function addNews($feed_id, $title, $description, $link, $pub_date, $categories = null) {
+        $stmt = $this->conn->prepare("
+            INSERT INTO news (feed_id, title, description, link, pub_date, categories)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+
+        $stmt->bind_param("isssss", $feed_id, $title, $description, $link, $pub_date, $categories);
+        return $stmt->execute();
+    }
+
 }
 ?>

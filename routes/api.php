@@ -14,6 +14,7 @@ require_once '../controllers/FeedController.php';    // Controlador de feeds
 require_once '../controllers/NewsController.php';    // Controlador de noticias
 require_once '../services/FeedService.php';
 
+$feedService = new FeedService($conn);
 // Crear instancias de los controladores
 $feedController = new FeedController($conn);
 $newsController = new NewsController($conn);
@@ -64,6 +65,11 @@ try {
         } else {
             throw new Exception("Error al agregar el feed");
         }
+    }
+    elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['updateNews'])) {
+        error_log("Method: ".$_SERVER['REQUEST_METHOD']);
+        $result = $feedService->fetchAndSaveNews();
+        echo json_encode($result);
     }
     else {
         throw new Exception("Endpoint no válido");
