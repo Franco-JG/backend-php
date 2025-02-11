@@ -50,11 +50,12 @@ try {
         // Obtener y loggear datos del body
         $rawData = file_get_contents("php://input");
         $data = json_decode($rawData, true);
+        // Validar que se hayan proporcionado URL y nombre del feed
         if (!isset($data['url'])) {
             throw new Exception("URL del feed no proporcionada");
         }
         
-        $result = $feedController->addFeed($data['url']);
+        $result = $feedController->addFeed($data);
         
         if ($result) {
             http_response_code(201); // Created
