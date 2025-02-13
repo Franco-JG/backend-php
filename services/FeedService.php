@@ -1,6 +1,9 @@
 <?php
 require_once '../models/Feed.php';
 require_once '../models/News.php';
+require_once '../vendor/autoload.php';
+
+use SimplePie\SimplePie;
 
 class FeedService {
     private $conn;
@@ -20,30 +23,39 @@ class FeedService {
             $feed_id = $feed['id'];
             $url = $feed['url'];
 
-            // Obtener noticias del feed (usando SimpleXML para RSS)
-            $rss = simplexml_load_file($url,"SimpleXMLElement", LIBXML_NOCDATA);
-            if ($rss === false) {
+            //Creamos una instancia de SimplePie
+            $pie = new SimplePie();
+            $pie->enable_cache(false);
+            $pie->set_feed_url($url);
+            $pie->init();
+
+            if ($pie->error()) {
+                error_log("Error al obtener el feed: " . $pie->error());
                 continue; // Si hay un error con el feed, saltarlo
             }
+            
+            // Iterar sobre los items del feed
+            foreach ($pie->get_items() as $item) {
+                $title = $item->get_title();
+                $description = $item->get_description();
+                $link = $item->get_permalink();
+                $pub_date = $item->get_date('Y-m-d H:i:s');
 
-            foreach ($rss->channel->item as $item) {
-                $title = (string) $item->title;
-                $description = (string) $item->description;
-                $link = (string) $item->link;
-                $pub_date = date("Y-m-d H:i:s", strtotime((string) $item->pubDate));
-
-                // Si el feed tiene categorías
+                //Obtener categorias
                 $categories = [];
-                if (isset($item->category)) {
-                    foreach ($item->category as $category) {
-                        $categories[] = (string) $category;
+                if ($item_categories = $item->get_categories()) {
+                    foreach ($item_categories as $category) {
+                        $categories[] = $category->get_label();
                     }
                 }
-                $categories_json = !empty($categories) ? json_encode($categories) : null;
+                $categories_json = !empty($categories) ? json_encode($categories) : null ;
 
-                // Guardar la noticia en la DB
                 $this->newsModel->addNews($feed_id, $title, $description, $link, $pub_date, $categories_json);
             }
+
+            // Liberar recursos
+            $pie->__destruct();
+            unset($pie);
         }
 
         return ["success" => true, "message" => "Noticias actualizadas"];

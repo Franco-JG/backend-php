@@ -68,7 +68,6 @@ try {
         }
     }
     elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['updateNews'])) {
-        error_log("Method: ".$_SERVER['REQUEST_METHOD']);
         $result = $feedService->fetchAndSaveNews();
         echo json_encode($result);
     }

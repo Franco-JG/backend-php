@@ -1,16 +1,19 @@
-<?php
+    <?php
 
-function getFeedNameFromUrl($url) {
-    // Intentar cargar el XML desde la URL
-    $xmlContent = @simplexml_load_file($url);
+    require '../vendor/autoload.php';
 
-    // Validar si se pudo cargar correctamente
-    if (!$xmlContent) {
-        throw new Exception("Error al leer el XML desde la URL.");
+    use SimplePie\SimplePie;
+
+    function getFeedNameFromUrl($url) {
+        $feed = new SimplePie();
+        $feed->set_feed_url($url);
+        $feed->init();
+        // Manejar errores
+        if ($feed->error()) {
+            echo 'Error al cargar el feed: ' . $feed->error()."\n";
+            exit;
+        }
+        return $feed->get_title();
     }
 
-    // Intentar obtener el nombre del feed (esto puede variar según el XML)
-    return isset($xmlContent->channel->title) ? (string) $xmlContent->channel->title : "Feed Desconocido";
-}
-
-?>
+    ?>
