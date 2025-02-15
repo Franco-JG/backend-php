@@ -6,6 +6,7 @@
 
     function getFeedNameFromUrl($url) {
         $feed = new SimplePie();
+        $feed->enable_cache(false);
         $feed->set_feed_url($url);
         $feed->init();
         // Manejar errores

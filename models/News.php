@@ -49,5 +49,15 @@ class News {
         return $stmt->execute();
     }
 
+    // Método para verificar si el enlace ya existe
+    public function linkExists($link) {
+        $query = "SELECT 1 FROM news WHERE link = ? LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("s", $link);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->num_rows > 0; // Retorna true si el enlace existe
+    }
+
 }
 ?>

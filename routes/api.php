@@ -3,10 +3,16 @@
  * Archivo de enrutamiento de la API REST
  * Maneja las diferentes rutas y endpoints de la aplicación
  */
-
-// Configurar headers para CORS y tipo de contenido
 header("Access-Control-Allow-Origin: *");       // Permitir acceso desde cualquier origen
 header("Content-Type: application/json");       // Establecer tipo de respuesta como JSON
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS"); // Métodos permitidos
+header("Access-Control-Allow-Headers: Content-Type"); // Cabeceras permitidas
+
+// Manejar la solicitud OPTIONS para CORS
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200); // Respuesta exitosa para la preflight request
+    exit();
+}
 
 // Importar controladores y crear instancias
 require_once '../config/database.php';          // Primero la conexión
@@ -27,23 +33,23 @@ try {
         $result = $feedController->getFeeds();
         echo json_encode([
             "success" => true,
-            "feeds" => $result
+            "data" => $result
         ]);
-    } 
-    elseif (isset($_GET['news'])) {
+    }
+    elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['news'])) {
         // Endpoint: GET /api.php?news
         $result = $newsController->getNews();
         echo json_encode([
             "success" => true,
-            "news" => $result
+            "data" => $result
         ]);
-    } 
+    }
     elseif (isset($_GET['searchNews']) && isset($_GET['q'])) {
         // Endpoint: GET /api.php?searchNews&q={término}
         $result = $newsController->searchNews($_GET['q']);
         echo json_encode([
             "success" => true,
-            "news" => $result
+            "data" => $result
         ]);
     }
     else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['feeds'])) {
@@ -54,22 +60,27 @@ try {
         if (!isset($data['url'])) {
             throw new Exception("URL del feed no proporcionada");
         }
-        
+
         $result = $feedController->addFeed($data);
-        
+
         if ($result) {
             http_response_code(201); // Created
             echo json_encode([
                 "success" => true,
-                "message" => "Feed agregado correctamente"
+                "data" => "Feed: " . $data['url'] . " agregado correctamente"
             ]);
         } else {
             throw new Exception("Error al agregar el feed");
         }
     }
-    elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['updateNews'])) {
+    elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['news'])) {
         $result = $feedService->fetchAndSaveNews();
-        echo json_encode($result);
+        if ($result) {
+            echo json_encode([
+                "success"=> true,
+                "data"=>"Noticias actualizadas"
+            ]);
+        }
     }
     else {
         throw new Exception("Endpoint no válido");
