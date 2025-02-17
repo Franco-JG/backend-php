@@ -36,17 +36,17 @@ try {
             "data" => $result
         ]);
     }
-    elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['news'])) {
-        // Endpoint: GET /api.php?news
-        $result = $newsController->getNews();
+    elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['news']) && isset($_GET['q']))) {
+        // Endpoint: GET /api.php?searchNews&q={término} //!Quiero buscar noticias
+        $result = $newsController->searchNews($_GET['q']);
         echo json_encode([
             "success" => true,
             "data" => $result
         ]);
     }
-    elseif (isset($_GET['searchNews']) && isset($_GET['q'])) {
-        // Endpoint: GET /api.php?searchNews&q={término}
-        $result = $newsController->searchNews($_GET['q']);
+    elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['news'])) {
+        // Endpoint: GET /api.php?news
+        $result = $newsController->getNews();
         echo json_encode([
             "success" => true,
             "data" => $result

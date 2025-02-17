@@ -31,12 +31,13 @@ class News {
      * @param string $query Término de búsqueda
      * @return array Array asociativo con las noticias que coinciden con la búsqueda
      */
-    public function searchNews($query){
-        $stmt = $this->conn->prepare("SELECT * FROM news WHERE title LIKE ? OR descripcion LIKE ?");
-        $likeQuery = "%$query%";
-        $stmt->bind_param("ss",$likeQuery,$likeQuery);
+    public function searchNews($query) {
+        $stmt = $this->conn->prepare("SELECT * FROM news WHERE title LIKE ? OR description LIKE ?");
+        $search = "%$query%";
+        $stmt->bind_param("ss", $search, $search);
         $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     public function addNews($feed_id, $title, $description, $link, $pub_date, $categories = null) {

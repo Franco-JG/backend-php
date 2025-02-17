@@ -1,23 +1,23 @@
 <?php
-require_once '../models/Feed.php';
-require_once '../models/News.php';
+require_once '../controllers/FeedController.php';
+require_once '../controllers/NewsController.php';
 require_once '../vendor/autoload.php';
 
 use SimplePie\SimplePie;
 
 class FeedService {
     private $conn;
-    private $feedModel;
-    private $newsModel;
+    private $feedController;
+    private $newsController;
 
     public function __construct($conn) {
         $this->conn = $conn;
-        $this->feedModel = new Feed($conn);
-        $this->newsModel = new News($conn);
+        $this->feedController = new FeedController($conn);
+        $this->newsController = new NewsController($conn);
     }
 
     public function fetchAndSaveNews() {
-        $feeds = $this->feedModel->getFeeds(); // Obtiene los feeds desde la DB
+        $feeds = $this->feedController->getFeeds(); // Obtiene los feeds desde la DB
 
         foreach ($feeds as $feed) {
             $feed_id = $feed['id'];
@@ -38,7 +38,7 @@ class FeedService {
                 $link = $item->get_permalink();
             
                 // Verificar si el enlace ya existe
-                if ($this->newsModel->linkExists($link)) {
+                if ($this->newsController->linkExists($link)) {
                     error_log("El enlace ya existe: $link");
                     continue; // Saltar este ítem y pasar al siguiente
                 }
@@ -62,7 +62,7 @@ class FeedService {
                 $categories_json = !empty($categories) ? json_encode($categories, JSON_UNESCAPED_UNICODE) : null;
             
                 // Insertar la noticia en la base de datos
-                if (!$this->newsModel->addNews($feed_id, $title, $sanitized_description, $link, $pub_date, $categories_json)) {
+                if (!$this->newsController->addNews($feed_id, $title, $sanitized_description, $link, $pub_date, $categories_json)) {
                     error_log("Error al insertar la noticia: $link");
                 }
             }
