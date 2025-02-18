@@ -1,14 +1,14 @@
 <?php
 /**
  * Configuración de la conexión a la base de datos MySQL
- * Este archivo solo maneja la conexión, no crea la base de datos ni las tablas.
+ * Este archivo solo maneja la conexión.
  */
 
 // Credenciales de la base de datos
-$host = "localhost";     // Servidor de la base de datos
-$user = "root";         // Usuario de MySQL
-$pass = "";            // Contraseña del usuario
-$dbname = "rss_feed_db"; // Nombre de la base de datos
+$host = "localhost";        // Servidor de la base de datos
+$user = "root";             // Usuario de MySQL
+$pass = "";                 // Contraseña del usuario
+$dbname = "rss_feed_db";    // Nombre de la base de datos
 
 // Crear conexión con la base de datos
 $conn = new mysqli($host, $user, $pass, $dbname);

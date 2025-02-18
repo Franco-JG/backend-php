@@ -27,6 +27,7 @@ $newsController = new NewsController($conn);
 
 
 // Enrutamiento de endpoints con manejo de errores
+//* Obtener feeds y news
 try {
     if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['feeds'])) {
         // Endpoint: GET /api.php?feeds
@@ -37,7 +38,7 @@ try {
         ]);
     }
     elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && (isset($_GET['news']) && isset($_GET['q']))) {
-        // Endpoint: GET /api.php?searchNews&q={término} //!Quiero buscar noticias
+        // Endpoint: GET /api.php?news&q={término}
         $result = $newsController->searchNews($_GET['q']);
         echo json_encode([
             "success" => true,
@@ -45,13 +46,26 @@ try {
         ]);
     }
     elseif ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['news'])) {
-        // Endpoint: GET /api.php?news
-        $result = $newsController->getNews();
+        // Obtener el parámetro `order` si existe, o usar "pub_date" por defecto
+        $orderBy = isset($_GET['order']) ? $_GET['order'] : "pub_date";
+        error_log("Ordenando por: $orderBy"); //!Elimiar en producción
+        // Validar que la columna sea segura antes de enviarla a SQL
+        $allowedColumns = ["title", "description", "pub_date", "created_at"];
+        if (!in_array($orderBy, $allowedColumns)) {
+            echo json_encode([
+                "success" => false,
+                "data" => "Campo no válido"
+            ]);
+            exit();
+        }
+    
+        $result = $newsController->getNews($orderBy);
         echo json_encode([
             "success" => true,
             "data" => $result
         ]);
     }
+    //* Actualizar feeds y news
     else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['feeds'])) {
         // Obtener y loggear datos del body
         $rawData = file_get_contents("php://input");

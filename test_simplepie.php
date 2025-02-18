@@ -12,8 +12,11 @@ try {
     $feed->set_feed_url('https://feed.perfplanet.com/');
     $feed->init();
     $feedName = $feed->get_title();
-    echo "El nombre del feed es: " . $feedName;
-
+    echo 
+    "
+    <p>Feed Name: <strong>$feedName</strong></p>
+    <p>Feed URL: https://feed.perfplanet.com/</p>
+    ";
     $feed->__destruct();
     unset($feed);
 
