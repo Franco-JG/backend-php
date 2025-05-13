@@ -28,10 +28,12 @@ class Feed {
      * @param string $url URL del feed RSS a agregar
      * @return bool true si la inserción fue exitosa, false en caso contrario
      */
-    public function addFeed($url) {
-        $stmt = $this->conn->prepare("INSERT INTO feeds (url) VALUES (?)");
-        $stmt->bind_param("s", $url);
+    public function addFeed($data) {
+        $stmt = $this->conn->prepare("INSERT INTO feeds (url, name) VALUES (?, ?)");
+        $stmt->bind_param("ss", $data['url'], $data['name']);
         return $stmt->execute();
     }
+
+    
 }
 ?>

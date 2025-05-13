@@ -17,5 +17,13 @@ class NewsController {
         return $this->model->searchNews($query);
     }
 
+    public function linkExists($link) {
+        return $this->model->linkExists($link);
+    }
+
+    public function addNews($feed_id, $title, $description, $link, $pub_date, $categories = null) {
+        return $this->model->addNews($feed_id, $title, $description, $link, $pub_date, $categories);
+    }
+
 }
 ?>

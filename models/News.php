@@ -21,22 +21,36 @@ class News {
      * @return array Array asociativo con todas las noticias
      */
     public function getNews($orderBy = "pub_date") {
-        $sql = "SELECT * FROM news ORDER BY $orderBy DESC";
+        // Lista de columnas permitidas
+        $allowedColumns = ["title", "description", "pub_date", "created_at"];
+        
+        // Validar que la columna es segura
+        if (!in_array($orderBy, $allowedColumns)) {
+            $orderBy = "pub_date"; // Usar "pub_date" si el parámetro es inválido
+        }
+    
+        // Ahora es seguro incluir `$orderBy`
+        $sql = "SELECT * FROM news ORDER BY $orderBy ASC";
         $result = $this->conn->query($sql);
         return $result->fetch_all(MYSQLI_ASSOC);
     }
-
+    
     /**
      * Busca noticias por título o descripción
      * @param string $query Término de búsqueda
      * @return array Array asociativo con las noticias que coinciden con la búsqueda
      */
-    public function searchNews($query){
-        $stmt = $this->conn->prepare("SELECT * FROM news WHERE title LIKE ? OR descripcion LIKE ?");
-        $likeQuery = "%$query%";
-        $stmt->bind_param("ss",$likeQuery,$likeQuery);
+    public function searchNews($query) {
+        if ($query === "") {
+            return "La búsqueda no puede estar vacía";
+        }
+        $stmt = $this->conn->prepare("SELECT * FROM news WHERE title LIKE ? OR description LIKE ?");
+        $search = "%$query%";
+        $stmt->bind_param("ss", $search, $search);
         $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        $response = $result->fetch_all(MYSQLI_ASSOC);
+        return (!$response)? "Sin resultados" : $response;
     }
 
     public function addNews($feed_id, $title, $description, $link, $pub_date, $categories = null) {
@@ -44,9 +58,18 @@ class News {
             INSERT INTO news (feed_id, title, description, link, pub_date, categories)
             VALUES (?, ?, ?, ?, ?, ?)
         ");
-
         $stmt->bind_param("isssss", $feed_id, $title, $description, $link, $pub_date, $categories);
         return $stmt->execute();
+    }
+
+    // Método para verificar si el enlace ya existe
+    public function linkExists($link) {
+        $query = "SELECT 1 FROM news WHERE link = ? LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("s", $link);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->num_rows > 0; // Retorna true si el enlace existe
     }
 
 }
