@@ -1,7 +1,8 @@
 <?php
-require_once '../controllers/FeedController.php';
-require_once '../controllers/NewsController.php';
-require_once '../vendor/autoload.php';
+
+namespace OAW\Backend\Services;
+use OAW\Backend\Controllers\FeedController;
+use OAW\Backend\Controllers\NewsController;
 
 use SimplePie\SimplePie;
 

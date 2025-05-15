@@ -1,7 +1,6 @@
     <?php
 
-    require '../vendor/autoload.php';
-
+    namespace OAW\Backend\Utils;
     use SimplePie\SimplePie;
 
     function getFeedNameFromUrl($url) {

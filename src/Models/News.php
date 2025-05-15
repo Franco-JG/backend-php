@@ -1,4 +1,7 @@
 <?php
+
+namespace OAW\Backend\Models;
+
 /**
  * Clase News - Maneja las operaciones relacionadas con noticias RSS
  * Proporciona funcionalidades para obtener y buscar noticias en la base de datos
