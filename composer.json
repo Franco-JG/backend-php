@@ -6,7 +6,10 @@
     "autoload": {
         "psr-4": {
             "OAW\\Backend\\": "src/"
-        }
+        },
+        "files": [
+            "src/Utils/FeedUtils.php"
+        ]
     },
     "authors": [
         {
