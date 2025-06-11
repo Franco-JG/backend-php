@@ -1,28 +1,10 @@
 <?php
+require_once __DIR__ . '/vendor/autoload.php';
 
-require_once './vendor/autoload.php';
+use function OAW\Backend\Utils\getFeedNameFromUrl;
 
-use SimplePie\SimplePie;
+$url = "https://www.yucatan.com.mx/feed";
+$feedName = getFeedNameFromUrl($url);
 
-try {
-
-    $feed = new SimplePie();
-    $feed->enable_cache(false);
-
-    $feed->set_feed_url('https://feed.perfplanet.com/');
-    $feed->init();
-    $feedName = $feed->get_title();
-    echo 
-    "
-    <p>Feed Name: <strong>$feedName</strong></p>
-    <p>Feed URL: https://feed.perfplanet.com/</p>
-    ";
-    $feed->__destruct();
-    unset($feed);
-
-
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage();
-}
-
+echo "Feed Name: $feedName\n";
 ?>

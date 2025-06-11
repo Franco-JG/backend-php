@@ -1,5 +1,7 @@
 <?php
 
+namespace OAW\Backend\Models;
+
 // Clase Feed - Maneja las operaciones CRUD para feeds RSS
 class Feed {
     /* @var mysqli Conexión a la base de datos */
